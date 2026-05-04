@@ -1,52 +1,46 @@
-import { Entity, PrimaryColumn, Column, Index } from 'typeorm';
-
-export type TradeDirection = 'BUY' | 'SELL';
-export type TradeStatus = 'PENDING' | 'OPEN' | 'CLOSED' | 'CANCELLED';
-export type ExecutionStatus = 'SENT' | 'FILLED' | 'PARTIAL_FILL' | 'REJECTED' | 'FAILED';
-
 @Entity()
 export class Trade {
   @PrimaryColumn()
-  id: string;
+  id!: string;
 
   @Column()
-  accountId: string;
+  accountId!: string;
 
   @Column()
-  symbol: string;
+  symbol!: string;
 
   @Column()
-  direction: TradeDirection;
+  direction!: TradeDirection;
 
   @Column('decimal', { precision: 15, scale: 5 })
-  entryPrice: number;
+  entryPrice!: number;
 
   @Column('decimal', { precision: 15, scale: 5 })
-  stopLoss: number;
+  stopLoss!: number;
 
   @Column('decimal', { precision: 15, scale: 5 })
-  takeProfit: number;
+  takeProfit!: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  lotSize: number;
+  lotSize!: number;
 
   @Column()
-  status: TradeStatus;
+  status!: TradeStatus;
 
   @Column()
-  executionStatus: ExecutionStatus;
+  executionStatus!: ExecutionStatus;
 
   @Column('decimal', { precision: 15, scale: 2, default: 0 })
-  pnl: number;
+  pnl!: number;
 
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  pnlPips: number;
+  pnlPips!: number;
 
   @Column()
-  contextId: string;
+  contextId!: string;
 
   @Column()
-  openedAt: Date;
+  openedAt!: Date;
 
   @Column({ nullable: true })
   closedAt?: Date;
