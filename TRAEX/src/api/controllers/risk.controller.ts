@@ -13,7 +13,7 @@ export const getRiskStatus = async (req: Request, res: Response) => {
     const account = await portfolioService.getAccount();
     const canTrade = riskEngine.canTrade(account);
     const openTradesCount = await portfolioService.getOpenTradesCount();
-    
+
     res.json({
       success: true,
       data: {
@@ -25,10 +25,12 @@ export const getRiskStatus = async (req: Request, res: Response) => {
         riskSettings: account.riskSettings
       }
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+
     res.status(500).json({
       success: false,
-      error: error.message || 'Unknown error'
+      error: message
     });
   }
 };
@@ -36,16 +38,19 @@ export const getRiskStatus = async (req: Request, res: Response) => {
 export const updateSettings = async (req: Request, res: Response) => {
   try {
     const settings = req.body;
+
     const updated = await portfolioService.updateRiskSettings(settings);
-    
+
     res.json({
       success: true,
       data: updated.riskSettings
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+
     res.status(500).json({
       success: false,
-      error: error.message || 'Unknown error'
+      error: message
     });
   }
 };
