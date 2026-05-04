@@ -30,7 +30,7 @@ export const runStrategy = async (req: Request, res: Response) => {
       success: true,
       data: result
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     const message = error instanceof Error ? error.message : 'Unknown error';
 
     res.status(500).json({
