@@ -1,18 +1,15 @@
 import { Request, Response } from 'express';
 
-
-
-// Utiliser une instance globale ou injecter via middleware
 declare global {
   var tradingOrchestrator: any;
 }
 
-const tradingOrchestrator = global.tradingOrchestrator;
+const tradingOrchestrator = (global as any).tradingOrchestrator;
 
 export const runStrategy = async (req: Request, res: Response) => {
   try {
     const { symbol, timeframe } = req.body;
-    
+
     if (!symbol || !timeframe) {
       return res.status(400).json({
         success: false,
@@ -20,16 +17,25 @@ export const runStrategy = async (req: Request, res: Response) => {
       });
     }
 
+    if (!tradingOrchestrator) {
+      return res.status(500).json({
+        success: false,
+        error: 'TradingOrchestrator not initialized'
+      });
+    }
+
     const result = await tradingOrchestrator.runTradingCycle(symbol, timeframe);
-    
+
     res.json({
       success: true,
       data: result
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+
     res.status(500).json({
       success: false,
-      error: error.message || 'Unknown error'
+      error: message
     });
   }
 };
