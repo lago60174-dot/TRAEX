@@ -12,8 +12,8 @@ export class SimulatedMarketDataService implements IMarketDataService {
 
     for (let i = limit; i > 0; i--) {
       const timestamp = new Date(now.getTime() - i * this.getTimeframeMs(timeframe));
-      const volatility = 0.001; // 0.1% volatility
-      
+      const volatility = 0.001;
+
       const open = basePrice + (Math.random() - 0.5) * basePrice * volatility;
       const close = open + (Math.random() - 0.5) * basePrice * volatility;
       const high = Math.max(open, close) + Math.random() * basePrice * volatility * 0.5;
@@ -39,14 +39,15 @@ export class SimulatedMarketDataService implements IMarketDataService {
 
   async getCurrentPrices(): Promise<Record<string, number>> {
     const prices: Record<string, number> = {};
+
     for (const symbol of Object.keys(INSTRUMENT_CONFIG)) {
       prices[symbol] = await this.getLastPrice(symbol);
     }
+
     return prices;
   }
 
   async getCurrentSpread(symbol: string): Promise<number> {
-    // Spread simulé entre 1 et 3 pips
     return 1.0 + Math.random() * 2.0;
   }
 
@@ -67,6 +68,7 @@ export class SimulatedMarketDataService implements IMarketDataService {
       'AUD/USD': 0.65,
       'USD/AUD': 1.54,
     };
+
     return rates[pair] || 1.0;
   }
 
@@ -82,6 +84,7 @@ export class SimulatedMarketDataService implements IMarketDataService {
       'XAU/USD': 1950.00,
       'US30': 35000.00,
     };
+
     return prices[symbol] || 1.0;
   }
 
@@ -94,6 +97,7 @@ export class SimulatedMarketDataService implements IMarketDataService {
       'H4': 14400000,
       'D1': 86400000,
     };
+
     return map[timeframe] || 3600000;
   }
 }
