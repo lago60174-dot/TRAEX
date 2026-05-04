@@ -1,3 +1,14 @@
+import { Entity, PrimaryColumn, Column } from 'typeorm';
+
+export type TradeDirection = 'BUY' | 'SELL';
+export type TradeStatus = 'PENDING' | 'OPEN' | 'CLOSED' | 'CANCELLED';
+export type ExecutionStatus =
+  | 'SENT'
+  | 'FILLED'
+  | 'PARTIAL_FILL'
+  | 'REJECTED'
+  | 'FAILED';
+
 @Entity()
 export class Trade {
   @PrimaryColumn()
@@ -46,11 +57,5 @@ export class Trade {
   closedAt?: Date;
 
   @Column({ nullable: true })
-  closeReason?: 'SL' | 'TP' | 'MANUAL';
-
-  @Column({ nullable: true })
-  executionError?: string;
-
-  @Column('decimal', { precision: 15, scale: 5, nullable: true })
   closePrice?: number;
 }
