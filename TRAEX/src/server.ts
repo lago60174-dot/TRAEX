@@ -4,7 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { initializeVAPID } from './config/vapid.config';
-import { checkSupabaseConnection } from './config/supabase.config';
+import { supabase } from './config/supabase.config';
 import { accountRoutes } from './api/routes/account.routes';
 import { strategyRoutes } from './api/routes/strategy.routes';
 import { tradeRoutes } from './api/routes/trade.routes';
