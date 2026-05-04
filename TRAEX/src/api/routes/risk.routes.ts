@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { getEvents } from '../controllers/event.controller';
+import { getRiskStatus, updateSettings } from '../controllers/risk.controller';
 
 const router = Router();
 
-router.get('/:contextId', getEvents);
+router.get('/', getRiskStatus);
+router.put('/settings', updateSettings);
 
-export { router as eventRoutes };
+export { router as riskRoutes };
