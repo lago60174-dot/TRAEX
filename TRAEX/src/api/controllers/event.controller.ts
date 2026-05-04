@@ -11,7 +11,7 @@ export const getEvents = async (req: Request, res: Response) => {
       success: true,
       data: { events }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     const message = error instanceof Error ? error.message : 'Unknown error';
 
     res.status(500).json({
