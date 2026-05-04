@@ -3,14 +3,14 @@ import { Trade } from '../models/Trade';
 
 export class OandaBrokerService implements IBrokerService {
   private baseUrl: string;
-  
+
   constructor(private apiKey: string, private accountId: string) {
     this.baseUrl = 'https://api-fxpractice.oanda.com/v3';
   }
 
   async openPosition(trade: Trade): Promise<OrderResult> {
-    const units = trade.direction === 'BUY' 
-      ? (trade.lotSize * 100000).toString() 
+    const units = trade.direction === 'BUY'
+      ? (trade.lotSize * 100000).toString()
       : (-trade.lotSize * 100000).toString();
 
     const response = await fetch(
@@ -26,27 +26,22 @@ export class OandaBrokerService implements IBrokerService {
             type: 'MARKET',
             instrument: trade.symbol.replace('/', '_'),
             units,
-            stopLossOnFill: {
-              price: trade.stopLoss.toString()
-            },
-            takeProfitOnFill: {
-              price: trade.takeProfit.toString()
-            }
+            stopLossOnFill: { price: trade.stopLoss.toString() },
+            takeProfitOnFill: { price: trade.takeProfit.toString() }
           }
         })
       }
     );
 
+    const data: any = await response.json();
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`OANDA order failed: ${JSON.stringify(error)}`);
+      throw new Error(`OANDA error: ${JSON.stringify(data)}`);
     }
 
-    const data = await response.json();
-    
     return {
-      filled: data.orderFillTransaction !== undefined,
-      executedPrice: parseFloat(data.orderFillTransaction?.price || trade.entryPrice),
+      filled: !!data?.orderFillTransaction,
+      executedPrice: parseFloat(data?.orderFillTransaction?.price ?? trade.entryPrice),
       filledLotSize: trade.lotSize,
       partialFill: false,
       latencyMs: 0
@@ -69,16 +64,20 @@ export class OandaBrokerService implements IBrokerService {
       }
     );
 
+    const data: any = await response.json();
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`OANDA close failed: ${JSON.stringify(error)}`);
+      throw new Error(`OANDA close error: ${JSON.stringify(data)}`);
     }
 
-    const data = await response.json();
-    
+    const price =
+      data?.longOrderFillTransaction?.price ??
+      data?.shortOrderFillTransaction?.price ??
+      0;
+
     return {
       filled: true,
-      executedPrice: parseFloat(data.longOrderFillTransaction?.price || data.shortOrderFillTransaction?.price),
+      executedPrice: parseFloat(price),
       filledLotSize: trade.lotSize,
       partialFill: false,
       latencyMs: 0
