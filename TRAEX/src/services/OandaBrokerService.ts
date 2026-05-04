@@ -2,30 +2,29 @@ import { IBrokerService, OrderResult } from './IBrokerService';
 import { Trade } from '../models/Trade';
 
 export class OandaBrokerService implements IBrokerService {
-  private baseUrl: string;
+  private baseUrl = 'https://api-fxpractice.oanda.com/v3';
 
-  constructor(private apiKey: string, private accountId: string) {
-    this.baseUrl = 'https://api-fxpractice.oanda.com/v3';
-  }
+  constructor(private apiKey: string, private accountId: string) {}
 
   async openPosition(trade: Trade): Promise<OrderResult> {
-    const units = trade.direction === 'BUY'
-      ? (trade.lotSize * 100000).toString()
-      : (-trade.lotSize * 100000).toString();
+    const units =
+      trade.direction === 'BUY'
+        ? trade.lotSize * 100000
+        : -trade.lotSize * 100000;
 
     const response = await fetch(
       `${this.baseUrl}/accounts/${this.accountId}/orders`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           order: {
             type: 'MARKET',
             instrument: trade.symbol.replace('/', '_'),
-            units,
+            units: units.toString(),
             stopLossOnFill: { price: trade.stopLoss.toString() },
             takeProfitOnFill: { price: trade.takeProfit.toString() }
           }
@@ -36,12 +35,14 @@ export class OandaBrokerService implements IBrokerService {
     const data: any = await response.json();
 
     if (!response.ok) {
-      throw new Error(`OANDA error: ${JSON.stringify(data)}`);
+      throw new Error(JSON.stringify(data));
     }
 
     return {
-      filled: !!data?.orderFillTransaction,
-      executedPrice: parseFloat(data?.orderFillTransaction?.price ?? trade.entryPrice),
+      filled: !!data.orderFillTransaction,
+      executedPrice: parseFloat(
+        data.orderFillTransaction?.price ?? trade.entryPrice
+      ),
       filledLotSize: trade.lotSize,
       partialFill: false,
       latencyMs: 0
@@ -54,7 +55,7 @@ export class OandaBrokerService implements IBrokerService {
       {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -67,7 +68,7 @@ export class OandaBrokerService implements IBrokerService {
     const data: any = await response.json();
 
     if (!response.ok) {
-      throw new Error(`OANDA close error: ${JSON.stringify(data)}`);
+      throw new Error(JSON.stringify(data));
     }
 
     const price =
