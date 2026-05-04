@@ -25,7 +25,7 @@ export const getRiskStatus = async (req: Request, res: Response) => {
         riskSettings: account.riskSettings
       }
     });
-  } catch (error: unknown) {
+  } catch (error: any) {
     const message = error instanceof Error ? error.message : 'Unknown error';
 
     res.status(500).json({
