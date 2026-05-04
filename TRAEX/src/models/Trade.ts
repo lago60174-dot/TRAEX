@@ -58,4 +58,14 @@ export class Trade {
 
   @Column({ nullable: true })
   closePrice?: number;
+
+  // 🔥 FIX IMPORTANT (utilisé dans ton code mais manquant)
+  @Column('decimal', { precision: 5, scale: 2, default: 1 })
+  riskPercent!: number;
 }
+
+// exports propres pour repository
+export type TradeTypes =
+  | TradeDirection
+  | TradeStatus
+  | ExecutionStatus;
